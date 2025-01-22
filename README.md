@@ -1,4 +1,4 @@
-# Snyk Kube Watcher
+# Snyk Kube-watcher
 
 ## High-Level Architecture
 
