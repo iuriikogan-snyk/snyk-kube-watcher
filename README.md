@@ -3,12 +3,15 @@
 ## High-Level Architecture
 
 *Kubeconfigs + Contexts*
+
 The user provides paths to one or more kubeconfig files and possibly multiple contexts. If multiple contexts and kubeconfigs are given, the application pairs each context with each kubeconfig (or a one-to-one mapping, as desired).
 
 *Build Kubernetes Clients*
+
 For each (kubeconfig, context) pair, the application uses clientcmd.BuildConfigFromFlags (or its variants) to build a rest.Config, then creates a clientset for that cluster.
 
 *Spawn Watchers*
+
 Each (kubeconfig, context) pair initializes a Shared Informer Factory (e.g., informers.NewSharedInformerFactory), focusing on Pod resources. This watcher monitors all namespaces for new or updated Pods.
 
 *Shared Informer: Pod Events*
@@ -18,12 +21,15 @@ Each (kubeconfig, context) pair initializes a Shared Informer Factory (e.g., inf
 - Update events occur when a Pod changes (e.g., container restarts, updates to labels, etc.).
 
 *Extract Container Images*
+
 For each Pod, the application iterates over pod.Spec.Containers and extracts the Image field (e.g., nginx:latest, alpine:3.17, etc.).
 
 *Global Task Queue (taskCh)*
+
 All watchers push images into a single, centralized queue so that the same concurrency and rate-limiting logic applies across all clusters.
 
 *Worker Pool*
+
 A fixed number of workers (e.g., concurrency = 5) read from the queue in parallel. Each worker ensures:
 
 - Rate Limit: Before each Snyk API call, the worker waits for a token from the rate limiter (e.g., 2 requests/second).
