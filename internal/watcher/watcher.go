@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"myapp/internal/config"
-	"myapp/internal/tasks"
+	"github.com/iuriikogan-snyk/snyk-kube-watcher/internal/config"
+	"github.com/iuriikogan-snyk/snyk-kube-watcher/internal/tasks"
 
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/informers"
