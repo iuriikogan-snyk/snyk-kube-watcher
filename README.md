@@ -38,7 +38,7 @@ A fixed number of workers (e.g., concurrency = 5) read from the queue in paralle
 
 *Snyk API*
 
-Each worker issues a POST to the Snyk API endpoint (e.g., /v1/org/<ORG_ID>/container-monitoring) with the container image.
+Each worker issues a POST to the Snyk API endpoint (e.g. /org/{orgId}/integrations/{integrationId}/import>/${target}) with the container image.
 
 If the response is successful, Snyk now monitors that image for vulnerabilities.
 
