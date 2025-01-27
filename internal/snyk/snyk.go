@@ -15,7 +15,7 @@ type APIResponse struct {
 }
 
 func MonitorImage(ctx context.Context, image, orgID, token string) error {
-	url := fmt.Sprintf("https://api.snyk.io/v1/org/%s/container-monitoring", orgID)
+	url := fmt.Sprintf(#TODO, orgID)
 	payload, err := json.Marshal(map[string]string{"image": image})
 	if err != nil {
 		return err
