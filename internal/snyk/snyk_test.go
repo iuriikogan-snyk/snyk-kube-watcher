@@ -48,6 +48,7 @@ func TestMonitorImage(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		tt := tt // capture range variable
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.Method != tt.expectedMethod {
