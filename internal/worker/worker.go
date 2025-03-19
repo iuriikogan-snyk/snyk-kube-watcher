@@ -9,11 +9,17 @@ import (
 	"time"
 
 	"github.com/iuriikogan-snyk/snyk-kube-watcher/internal/config"
-	"github.com/iuriikogan-snyk/snyk-kube-watcher/internal/snyk"
+	snyk "github.com/iuriikogan-snyk/snyk-kube-watcher/internal/snyk"
 	"github.com/iuriikogan-snyk/snyk-kube-watcher/internal/tasks"
 
 	"golang.org/x/time/rate"
 )
+
+// StartPool initializes a pool of workers that will process image scan tasks concurrently.
+// It takes a context, configuration, and a channel of tasks as input.
+// It returns a WaitGroup that can be used to wait for all workers to finish.
+// The number of workers is determined by the Concurrency field in the configuration.
+// Each worker runs in its own goroutine and processes tasks from the taskCh channel.
 
 func StartPool(ctx context.Context, c config.Config, taskCh <-chan tasks.ImageTask) *sync.WaitGroup {
 	var wg sync.WaitGroup
@@ -26,6 +32,18 @@ func StartPool(ctx context.Context, c config.Config, taskCh <-chan tasks.ImageTa
 	}
 	return &wg
 }
+
+// runWorker is a worker function that processes image scan tasks.
+// It takes a context, worker ID, configuration, and a channel of tasks as input.
+// It logs the start and stop of the worker.
+// It uses a rate limiter to control the rate of task processing.
+// It maintains a map of scanned images to avoid processing the same image multiple times.
+// It processes tasks from the taskCh channel until it is closed.
+// For each task, it calls the process function to perform the actual scanning.
+// If the task fails, it logs the error and retries the task up to MaxRetries times.
+// The retry logic uses exponential backoff, starting with a 1-second delay and doubling the delay for each subsequent retry.
+// If the task is successful, it adds the image to the scanned map to avoid reprocessing.
+// The function returns when the context is done or the taskCh channel is closed.
 
 func runWorker(ctx context.Context, id int, c config.Config, taskCh <-chan tasks.ImageTask) {
 	slog.Info("Worker started", "id", id)
